@@ -1,0 +1,317 @@
+(*Functions*)
+Distance[{DISTANCE1_, ANGLE1_, DISTANCE2_, ANGLE2_}] := 
+ Sqrt[(DISTANCE1*Cos[(Pi/180)*ANGLE1] - 
+      DISTANCE2*Cos[(Pi/180)*ANGLE2])^2 + (DISTANCE1*
+       Sin[(Pi/180)*ANGLE1] - DISTANCE2*Sin[(Pi/180)*ANGLE2])^2]
+
+EField[{CHARGE_, DISTANCE_}] := 8.99*10^9*(CHARGE/(DISTANCE^2))
+
+netEx[{CHARGE1_, CHARGE2_, CHARGE3_, RAD1_, RAD2_, RAD3_, RADM_, 
+   ANG1_, ANG2_, ANG3_, 
+   ANGM_}] := -EField[{CHARGE1, 
+      Distance[{RAD1, ang1, radm, angm}]}]*(RAD1*Cos[(Pi/180)*ANG1] - 
+      RADM*Cos[(Pi/180)*ANGM])/Distance[{RAD1, ANG1, RADM, ANGM}] - 
+  EField[{CHARGE2, 
+     Distance[{rad2, ang2, radm, angm}]}]*(RAD2*Cos[(Pi/180)*ANG2] - 
+      RADM*Cos[(Pi/180)*ANGM])/Distance[{RAD2, ang2, RADM, ANGM}] - 
+  EField[{CHARGE3, 
+     Distance[{rad3, ang3, radm, angm}]}]*(RAD2*Cos[(Pi/180)*ANG3] - 
+      RADM*Cos[(Pi/180)*ANGM])/Distance[{RAD2, ang3, RADM, ANGM}]
+
+netEy[{CHARGE1_, CHARGE2_, CHARGE3_, RAD1_, RAD2_, RAD3_, RADM_, 
+   ANG1_, ANG2_, ANG3_, 
+   ANGM_}] := -EField[{CHARGE1, 
+      Distance[{RAD1, ang1, radm, angm}]}]*(RAD1*Sin[(Pi/180)*ANG1] - 
+      RADM*Sin[(Pi/180)*ANGM])/Distance[{RAD1, ANG1, RADM, ANGM}] - 
+  EField[{CHARGE2, 
+     Distance[{rad2, ang2, radm, angm}]}]*(RAD2*Sin[(Pi/180)*ANG2] - 
+      RADM*Sin[(Pi/180)*ANGM])/Distance[{RAD2, ang2, RADM, ANGM}] - 
+  EField[{CHARGE3, 
+     Distance[{rad3, ang3, radm, angm}]}]*(RAD2*Sin[(Pi/180)*ANG3] - 
+      RADM*Sin[(Pi/180)*ANGM])/Distance[{RAD2, ang3, RADM, ANGM}]
+
+Fx[CHARGE_] := 
+ CHARGE*netEx[{charge1, charge2, charge3, rad1, rad2, rad3, radm, 
+    ang1, ang2, ang3, angm}]
+
+Fy[CHARGE_] := 
+ CHARGE*netEy[{charge1, charge2, charge3, rad1, rad2, rad3, radm, 
+    ang1, ang2, ang3, angm}]
+
+
+Manipulate[
+ Grid[{
+   (*visualisation*)
+   {
+    Graphics[{
+      {
+       (*line from particle to measurepoint*)
+       Dashed,
+       Lighter[Green, 0.5],
+       Line[{{rad1*Cos[(Pi/180)*ang1], 
+          rad1*Sin[(Pi/180)*ang1]}, {radm*Cos[(Pi/180)*angm], 
+          radm*Sin[(Pi/180)*angm]}}],
+       Line[{{rad2*Cos[(Pi/180)*ang2], 
+          rad2*Sin[(Pi/180)*ang2]}, {radm*Cos[(Pi/180)*angm], 
+          radm*Sin[(Pi/180)*angm]}}],
+       Line[{{rad3*Cos[(Pi/180)*ang3], 
+          rad3*Sin[(Pi/180)*ang3]}, {radm*Cos[(Pi/180)*angm], 
+          radm*Sin[(Pi/180)*angm]}}],
+       (*polar coordinate guidance*)
+       Lighter[Purple], 
+       Line[{{0, 0}, {rad1*Cos[(Pi/180)*ang1], 
+          rad1*Sin[(Pi/180)*ang1]}}],
+       Lighter[Blue], 
+       Line[{{0, 0}, {rad2*Cos[(Pi/180)*ang2], 
+          rad2*Sin[(Pi/180)*ang2]}}],
+       Lighter[Orange], 
+       Line[{{0, 0}, {rad3*Cos[(Pi/180)*ang3], 
+          rad3*Sin[(Pi/180)*ang3]}}],
+       Lighter[Red], 
+       Line[{{0, 0}, {radm*Cos[(Pi/180)*angm], 
+          radm*Sin[(Pi/180)*angm]}}],
+       Gray,
+       Circle[{0, 0}, rad1],
+       Circle[{0, 0}, rad2],
+       Circle[{0, 0}, rad3],
+       Circle[{0, 0}, radm]
+       },
+      (*particle*)
+      (*pos/neg indicator*)
+      Lighter[Purple], 
+      Disk[{rad1*Cos[(Pi/180)*ang1], rad1*Sin[(Pi/180)*ang1]}, .07],
+      Black, 
+      Style[Text[
+        If[charge1 >= 0, "+", "-"], {rad1*Cos[(Pi/180)*ang1], 
+         rad1*Sin[(Pi/180)*ang1]}], Bold, 20],
+      Lighter[Blue], 
+      Disk[{rad2*Cos[(Pi/180)*ang2], rad2*Sin[(Pi/180)*ang2]}, .07],
+      Black, 
+      Style[Text[
+        If[charge2 >= 0, "+", "-"], {rad2*Cos[(Pi/180)*ang2], 
+         rad2*Sin[(Pi/180)*ang2]}], Bold, 20],
+      Lighter[Orange], 
+      Disk[{rad3*Cos[(Pi/180)*ang3], rad3*Sin[(Pi/180)*ang3]}, .07],
+      Black, 
+      Style[Text[
+        If[charge3 >= 0, "+", "-"], {rad3*Cos[(Pi/180)*ang3], 
+         rad3*Sin[(Pi/180)*ang3]}], Bold, 20],
+      Red, PointSize[.03], 
+      Point[{radm*Cos[(Pi/180)*angm], radm*Sin[(Pi/180)*angm]}],
+      Black, 
+      Style[Text[
+        If[chargem >= 0, "+", "-"], {radm*Cos[(Pi/180)*angm], 
+         radm*Sin[(Pi/180)*angm]}], Bold, 15],
+      (*vector*)
+      Arrowheads[.05],
+      Lighter[Brown], 
+      Arrow[{{radm*Cos[(Pi/180)*angm], 
+         radm*Sin[(Pi/180)*angm]}, {radm*Cos[(Pi/180)*angm] + 
+          0.001*Fx[chargem], 
+         radm*Sin[(Pi/180)*angm] + 0.001*Fy[chargem]}}],
+      Green, 
+      Arrow[{{radm*Cos[(Pi/180)*angm], 
+         radm*Sin[(Pi/180)*angm]}, {radm*Cos[(Pi/180)*angm] + 
+          0.0000001*
+           netEx[{charge1, charge2, charge3, rad1, rad2, rad3, radm, 
+             ang1, ang2, ang3, angm}], 
+         radm*Sin[(Pi/180)*angm] + 
+          0.0000001*
+           netEy[{charge1, charge2, charge3, rad1, rad2, rad3, radm, 
+             ang1, ang2, ang3, angm}]}}]
+      }, ImageSize -> {400, 400}, Axes -> True, 
+     PlotRange -> {{-1.1, 1.1}, {-1.1, 1.1}}
+     ]
+    },
+   (*result*)
+   {
+    Style[
+     Row[{Subscript[Style["E", Italic], "1"], " = ", 
+       NumberForm[
+        EField[{charge1, Distance[{rad1, ang1, radm, angm}]}], {5, 
+         2}], " N/C"}], 18, Bold, Lighter[Purple]]
+    },
+   {
+    Style[
+     Row[{Subscript[Style["E", Italic], "2"], " = ", 
+       NumberForm[
+        EField[{charge2, Distance[{rad2, ang2, radm, angm}]}], {5, 
+         2}], " N/C"}], 18, Bold, Lighter[Blue]]
+    },
+   {
+    Style[
+     Row[{Subscript[Style["E", Italic], "3"], " = ", 
+       NumberForm[
+        EField[{charge3, Distance[{rad3, ang3, radm, angm}]}], {5, 
+         2}], " N/C"}], 18, Bold, Lighter[Orange]]
+    },
+   {
+    Style[
+     Row[{Subscript[Style["E", Italic], "x"], " = ", 
+       NumberForm[
+        netEx[{charge1, charge2, charge3, rad1, rad2, rad3, radm, 
+          ang1, ang2, ang3, angm}], {5, 2}], " N/C"}], 22, Bold]
+    },
+   {
+    Style[
+     Row[{Subscript[Style["E", Italic], "y"], " = ", 
+       NumberForm[
+        netEy[{charge1, charge2, charge3, rad1, rad2, rad3, radm, 
+          ang1, ang2, ang3, angm}], {5, 2}], " N/C"}], 22, Bold]
+    },
+   {
+    Style[
+     Row[{Subscript[Style["E", Italic], "net"], " = ", 
+       NumberForm[
+        Sqrt[((netEx[{charge1, charge2, charge3, rad1, rad2, rad3, 
+               radm, ang1, ang2, ang3, angm}])^2 + (netEy[{charge1, 
+               charge2, charge3, rad1, rad2, rad3, radm, ang1, ang2, 
+               ang3, angm}])^2)], {5, 2}], " N/C"}, 
+      Background -> Lighter[Green, 0.5]], 22, Black, Bold]
+    },
+   {
+    Style[
+     Row[{"Direction: ", 
+       NumberForm[
+        N[ArcTan[
+           netEx[{charge1, charge2, charge3, rad1, rad2, rad3, radm, 
+             ang1, ang2, ang3, angm}], 
+           netEy[{charge1, charge2, charge3, rad1, rad2, rad3, radm, 
+             ang1, ang2, ang3, angm}]]/Degree], {5, 2}], \[Degree]}, 
+      Background -> Lighter[Green]], 22, Black, Bold]
+    },
+   {
+    Style[
+     Row[{Subscript[Style["F", Italic], "E"], " = ", 
+       NumberForm[Sqrt[(Fx[chargem])^2 + (Fy[chargem])^2], {5, 2}], 
+       " N"}, Background -> Lighter[Brown]], 22, Black, Bold]
+    }
+   }, Alignment -> Left],
+ 
+ (*control*)
+ Grid[{
+   {Style["Net electric field by three charged particles", Bold, 24, 
+     FontColor -> RGBColor[0.15, 0.21, 0.49]]},
+   {Style["r2.1909.1", Bold, 14]},
+   {Style["", Bold, 12]},
+   
+   {Style["Particle 1", Bold, 14, LightGray, 
+     Background -> Lighter[Purple]]},
+   {
+    Control[{
+      {charge1, 0.0001, Row[{
+         " Charge"
+         }]
+       }, -10^-4, 10^-4, 10^-6, Appearance -> "Labeled"
+      }]
+    },
+   {
+    Control[{
+      {rad1, 0.2, Row[{
+         " Radius"
+         }]
+       },
+      0, 1, 10^-6, Appearance -> "Labeled"
+      }]
+    },
+   {
+    Control[{
+      {ang1, 30, Row[{
+         " Direction"
+         }]
+       },
+      0, 360, 0.1, Appearance -> "Labeled"
+      }]
+    },
+   {Style["Particle 2", Bold, 14, LightGray, 
+     Background -> Lighter[Blue]]},
+   {
+    Control[{
+      {charge2, 0.0001, Row[{
+         " Charge"
+         }]
+       },
+      -10^-4, 10^-4, 10^-6, Appearance -> "Labeled"
+      }]
+    },
+   {
+    Control[{
+      {rad2, 0.4, Row[{
+         " Radius"
+         }]
+       },
+      0, 1, 10^-6, Appearance -> "Labeled"
+      }]
+    },
+   {
+    Control[{
+      {ang2, 60, Row[{
+         " Direction"
+         }]
+       },
+      0, 360, 0.1, Appearance -> "Labeled"
+      }]
+    },
+   {Style["Particle 3", Bold, 14, LightGray, 
+     Background -> Lighter[Orange]]},
+   {
+    Control[{
+      {charge3, 0.0001, Row[{
+         " Charge"
+         }]
+       },
+      -10^-4, 10^-4, 10^-6, Appearance -> "Labeled"
+      }]
+    },
+   {
+    Control[{
+      {rad3, 0.6, Row[{
+         " Radius"
+         }]
+       },
+      0, 1, 10^-6, Appearance -> "Labeled"
+      }]
+    },
+   {
+    Control[{
+      {ang3, 90, Row[{
+         " Direction"
+         }]
+       },
+      0, 360, 0.1, Appearance -> "Labeled"
+      }]
+    },
+   {Style["Measurement point (test charge)", Bold, 14, LightGray, 
+     Background -> Lighter[Red]]},
+   {
+    Control[{
+      {chargem, 0.0001, Row[{
+         "Charge"
+         }]
+       },
+      -10^-4, 10^-4, 10^-6, Appearance -> "Labeled"
+      }]
+    },
+   {
+    Control[{
+      {radm, 0.8, Row[{"Radius"
+         }]
+       },
+      0, 1, 10^-6, Appearance -> "Labeled"
+      }]
+    },
+   {
+    Control[{
+      {angm, 120, Row[{"Direction"
+         }]
+       },
+      0, 360, 0.1, Appearance -> "Labeled"
+      }]
+    }
+   },
+  Alignment -> Left],
+ TrackedSymbols :> {charge1, charge2, charge3, chargem, rad1, rad2, 
+   rad3, radm, ang1, ang2, ang3, angm},
+ SaveDefinitions -> True,
+ ControlPlacement -> Left
+ ]

@@ -1,0 +1,74 @@
+(*annulus*)
+annulus3D[c_?VectorQ, {r1_, r2_}, h_?Positive] /; 0 < r1 < r2 := 
+ BSplineSurface[
+  Map[TranslationTransform[c], 
+   Map[Function[pt, 
+       Append[#1 pt, #2]], {{1, 0}, {1, 1}, {-1, 1}, {-1, 
+        0}, {-1, -1}, {1, -1}, {1, 0}}] & @@@ {{r2, h}, {r1, h}, {r1, 
+      0}, {r2, 0}}, {2}], SplineClosed -> True, 
+  SplineDegree -> {1, 2}, 
+  SplineKnots -> {{0, 0, 1/4, 1/2, 3/4, 1, 1}, {0, 0, 0, 1/4, 1/2, 
+     1/2, 3/4, 1, 1, 1}}, 
+  SplineWeights -> 
+   Outer[Times, ConstantArray[1, 4], {1, 1/2, 1/2, 1, 1/2, 1/2, 1}]]
+
+EField[{CHARGE_, HEIGHT_, 
+   RADIUS_}] := (8.99*10^9*CHARGE*HEIGHT)/((HEIGHT^2 + RADIUS^2)^(3/2))
+
+Manipulate[
+ Grid[{
+   {
+    Graphics3D[{
+      annulus3D[{0, 0, 0}, {radius*0.9, radius*1.1}, 0.01],
+      Lighter[Green], Arrowheads[.03], 
+      Arrow[{{0, 0, height}, {0, 0, 
+         height + 0.0002*EField[{charge, height, radius}]}}],
+      Style[Line[{{0, 0, -10}, {0, 0, 10}}], Black, Dashed],
+      Style[Line[{{0, 0, 0}, {radius, 0, 0}}], Black],
+      Style[Line[{{radius, 0, 0}, {0, 0, height}}], Black],
+      Lighter[Red], PointSize[.05], Point[{0, 0, height}],
+      Style[Text[height, {0, 0, height}], Bold, Black, 14],
+      Style[Text[radius, {radius, 0, 0}], Bold, Black, 14]
+      
+      }, Boxed -> False, ImageSize -> {400, 400}, PlotRange -> All
+     ],
+    Show[
+     Plot[EField[{charge, height, radius}], {height, -10, 10}, 
+      PlotRange -> Full,
+      AxesLabel -> {"Height (m)", "Electric field (E)"},
+      ImageSize -> 400],
+     Graphics[{
+       PointSize[0.03], Lighter[Red],
+       Point[
+        Dynamic[{
+          height, EField[{charge, height, radius}]
+          }]
+        ]
+       }]
+     ]
+    }
+   }],
+ Grid[{
+   {Style["Electric Field At The Central Axis Of A Charged Ring", 
+     Bold, 24, FontColor -> RGBColor[0.15, 0.21, 0.49]]},
+   {Style["r1.1909.1", Bold, 14]},
+   {Style["", Bold, 12]},
+   {Control[{{radius, 1, "Radius"}, 0, 10, 0.1, 
+      Appearance -> "Labeled"}]},
+   {Control[{{height, 1, "Height"}, -10, 10, 0.1, 
+      Appearance -> "Labeled"}]},
+   {Control[{{charge, 0.00001, "Charge"}, -0.00001, 0.00001, 
+      0.00000001, Appearance -> "Labeled"}]}
+   }, Alignment -> Left],
+ Grid[{
+   {Dynamic[
+     Style[Row[{"E = ", EField[{charge, height, radius}], " N/C"}], 
+      Bold, 18]]}, {Dynamic[
+     Style[Row[{"Maximum strength of electric field is ", 
+        Abs[EField[{charge, radius/Sqrt[2], radius}]], " N/C", 
+        " at height =" , (radius/Sqrt[2])}], Bold, 18]]}
+   }, Alignment -> Left],
+ TrackedSymbols :> {radius, height, charge, EField},
+ SaveDefinitions -> True
+ 
+ ]

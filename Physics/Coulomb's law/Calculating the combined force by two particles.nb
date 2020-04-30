@@ -1,0 +1,238 @@
+d12 = DIST[{rad1, rad2, ang1, ang2}];
+d13 = DIST[{rad1, rad3, ang1, ang3}];
+DIST[{DIST1_, DIST2_, ANG1_, ANG2_}] := 
+ Sqrt[(DIST1*Cos[(Pi/180)*ANG1] - 
+      DIST2*Cos[(Pi/180)*ANG2])^2 + (DIST1*Sin[(Pi/180)*ANG1] - 
+      DIST2*Sin[(Pi/180)*ANG2])^2]
+(*Functions*)
+(*Force*)
+F[{CHARGE1_, CHARGE2_, DISTANCE_}] := (CHARGE1*
+   CHARGE2*8.9875*10^9/((DISTANCE)^2))
+
+(*Net force, x direction*)
+netFx[] := 
+ F[{charge1, charge2, 
+     DIST[{rad1, rad2, ang1, ang2}]}]*((rad1*Cos[(Pi/180)*ang1] - 
+       rad2*Cos[(Pi/180)*ang2])/DIST[{rad1, rad2, ang1, ang2}]) + 
+  F[{charge1, charge3, 
+     DIST[{rad1, rad3, ang1, ang3}]}]*((rad1*Cos[(Pi/180)*ang1] - 
+       rad3*Cos[(Pi/180)*ang3])/DIST[{rad1, rad3, ang1, ang3}])
+
+(*Net force, y direction*)
+netFy[] := 
+ F[{charge1, charge2, 
+     DIST[{rad1, rad2, ang1, ang2}]}]*((rad1*Sin[(Pi/180)*ang1] - 
+       rad2*Sin[(Pi/180)*ang2])/DIST[{rad1, rad2, ang1, ang2}]) + 
+  F[{charge1, charge3, 
+     DIST[{rad1, rad3, ang1, ang3}]}]*((rad1*Sin[(Pi/180)*ang1] - 
+       rad3*Sin[(Pi/180)*ang3])/DIST[{rad1, rad3, ang1, ang3}])
+
+Manipulate[
+ (*Graphics*)
+ (*Charges*)
+ 
+ Grid[{
+   {
+    Graphics[{
+      
+      {
+       Dashed, Lighter[Red], 
+       Line[{{0, 0}, {rad1*Cos[(Pi/180)*ang1], 
+          rad1*Sin[(Pi/180)*ang1]}}],
+       Lighter[Blue], 
+       Line[{{0, 0}, {rad2*Cos[(Pi/180)*ang2], 
+          rad2*Sin[(Pi/180)*ang2]}}],
+       Lighter[Pink], 
+       Line[{{0, 0}, {rad3*Cos[(Pi/180)*ang3], 
+          rad3*Sin[(Pi/180)*ang3]}}],
+       Gray, Circle[{0, 0}, rad1], Circle[{0, 0}, rad2], 
+       Circle[{0, 0}, rad3],
+       Lighter[Green], Arrowheads[0.01], 
+       Arrow[{{rad2*Cos[(Pi/180)*ang2], 
+          rad2*Sin[(Pi/180)*ang2]}, {rad1*Cos[(Pi/180)*ang1], 
+          rad1*Sin[(Pi/180)*ang1]}}],
+       Arrow[{{rad3*Cos[(Pi/180)*ang3], 
+          rad3*Sin[(Pi/180)*ang3]}, {rad1*Cos[(Pi/180)*ang1], 
+          rad1*Sin[(Pi/180)*ang1]}}]
+       },
+      Red, 
+      Disk[{rad1*Cos[(Pi/180)*ang1], rad1*Sin[(Pi/180)*ang1]}, .07],
+      Black, 
+      Style[Text[
+        If[charge1 >= 0, "+", "-"], {rad1*Cos[(Pi/180)*ang1], 
+         rad1*Sin[(Pi/180)*ang1]}], Bold, 20],
+      Lighter[Blue], 
+      Disk[{rad2*Cos[(Pi/180)*ang2], rad2*Sin[(Pi/180)*ang2]}, .07],
+      Black, 
+      Style[Text[
+        If[charge2 >= 0, "+", "-"], {rad2*Cos[(Pi/180)*ang2], 
+         rad2*Sin[(Pi/180)*ang2]}], Bold, 20],
+      Pink, 
+      Disk[{rad3*Cos[(Pi/180)*ang3], rad3*Sin[(Pi/180)*ang3]}, .07] ,
+      Black, 
+      Style[Text[
+        If[charge3 >= 0, "+", "-"], {rad3*Cos[(Pi/180)*ang3], 
+         rad3*Sin[(Pi/180)*ang3]}], Bold, 20],
+      Green, Arrowheads[0.05], 
+      Arrow[{{rad1*Cos[(Pi/180)*ang1], 
+         rad1*Sin[(Pi/180)*ang1]}, {rad1*Cos[(Pi/180)*ang1] + 
+          10^-3*netFx[], rad1*Sin[(Pi/180)*ang1] + 10^-3*netFy[]}}],
+      Black, 
+      Text["Charge 1", {rad1*Cos[(Pi/180)*ang1], 
+        rad1*Sin[(Pi/180)*ang1] - 0.1}],
+      Black, 
+      Text["Charge 2", {rad2*Cos[(Pi/180)*ang2], 
+        rad2*Sin[(Pi/180)*ang2] - 0.1}],
+      Black, 
+      Text["Charge 3", {rad3*Cos[(Pi/180)*ang3], 
+        rad3*Sin[(Pi/180)*ang3] - 0.1}] },
+     
+     ImageSize -> {400, 400}, Axes -> True, 
+     PlotRange -> {{-1.1, 1.1}, {-1.1, 1.1}}]
+    },
+   {
+    Style[
+     Row[{Subscript[Style["q", Italic], "1"], " - ", 
+       Subscript[Style["q", Italic], "2"], " distance: " , 
+       N[DIST[{rad1, rad2, ang1, ang2}], 4]}], 18, Bold]
+    },
+   {
+    Style[
+     Row[{Subscript[Style["q", Italic], "1"], " - ", 
+       Subscript[Style["q", Italic], "3"], " distance: " , 
+       N[DIST[{rad1, rad3, ang1, ang3}], 4]}], 18, Bold]
+    },
+   {
+    Style[
+     Row[{Subscript[Style["F", Italic], "12"], " = ", 
+       NumberForm[
+        F[{charge1, charge2, DIST[{rad1, rad2, ang1, ang2}]}], {5, 
+         2}], " N"}], 18, Lighter[Blue], Bold]
+    },
+   {
+    Style[
+     Row[{Subscript[Style["F", Italic], "13"], " = ", 
+       NumberForm[
+        F[{charge1, charge3, DIST[{rad1, rad3, ang1, ang3}]}], {5, 
+         2}], " N"}], 18, Pink, Bold]
+    },
+   {
+    Style[
+     Row[{Subscript[Style["F", Italic], "1,net,x"], " = ", 
+       NumberForm[netFx[], {5, 2}], " N"}], 18, Bold]
+    },
+   {
+    Style[
+     Row[{Subscript[Style["F", Italic], "1,net,y"], " = ", 
+       NumberForm[netFy[], {5, 2}], " N"}], 18, Bold]
+    },
+   {
+    Style[
+     Row[{Subscript[Style["F", Italic], "1,net"], " = ", 
+       NumberForm[Sqrt[((netFx[])^2) + ((netFy[])^2)], {5, 2}], " N"},
+       Background -> Green], 22, Black, Bold]
+    },
+   {
+    Style[
+     Row[{"Direction: ", 
+       NumberForm[
+        N[ArcTan[netFx[], netFy[]]/Degree], {5, 2}], \[Degree]}, 
+      Background -> Green], 22, Black, Bold]
+    }
+   }, Alignment -> Left],
+ (*Plots*)
+ (*Computing*)
+ (*Calculation results*)
+ (*Control*)
+ Grid[{
+   {Style["Calculating the combined force", Bold, 24, 
+     FontColor -> RGBColor[0.15, 0.21, 0.49]]},
+   {Style["by two particles", Bold, 24, 
+     FontColor -> RGBColor[0.15, 0.21, 0.49]]},
+   {Style["r6.1909.4", Bold, 14]},
+   {Style["", Bold, 12]},
+   {Style["Particle 1 (Measuring point)", Bold, 13]},
+   {
+    Control[{
+      {charge1, 0.0001, " Charge"}, -10^-4, 10^-4, 10^-6, 
+      Appearance -> "Labeled"}]
+    },
+   {
+    Control[{
+      {rad1, 0.5, "Radius"}, 0, 1, 10^-6, Appearance -> "Labeled"}]
+    },
+   {
+    Control[{
+      {ang1, 30, "Direction"}, 0, 360, 0.1, Appearance -> "Labeled"}]
+    },
+   {Style["Particle 2", Bold, 13]},
+   {
+    Control[{
+      {charge2, 0.0001, "Charge"}, -10^-4, 10^-4, 10^-6, 
+      Appearance -> "Labeled"}]
+    },
+   {
+    Control[{
+      {rad2, 0.5, "Radius"}, 0, 1, 10^-6, Appearance -> "Labeled"}]
+    },
+   {
+    Control[{
+      {ang2, 60, "Direction"}, 0, 360, 0.1, Appearance -> "Labeled"}]
+    },
+   {Style["Particle 3", Bold, 13]},
+   {
+    Control[{
+      {charge3, 0.0001, "Charge"}, -10^-4, 10^-4, 10^-6, 
+      Appearance -> "Labeled"}]
+    },
+   {
+    Control[{
+      {rad3, 0.5, "Radius"}, 0, 1, 10^-6, Appearance -> "Labeled"}]
+    },
+   {
+    Control[{
+      {ang3, 90, "Direction"}, 0, 360, 0.1, Appearance -> "Labeled"}]
+    }},
+  Alignment -> Left],
+ Grid[{
+   {
+    Dynamic[
+     Plot[
+      F[{charge1, charge2, x}], {x, 0.01, 2},
+      PlotRange -> {{0, 2}, {-3000, 3000}},
+      AxesLabel -> {"Distance (m)", "Force (N)"},
+      ImageSize -> 300, 
+      PlotLabel -> 
+       Style[Subscript[Style["F", Italic], "12"], FontSize -> 15],
+      Epilog -> {PointSize[0.05], Lighter[Blue],
+        Point[
+         Dynamic[{
+           DIST[{rad1, rad2, ang1, ang2}], 
+           F[{charge1, charge2, DIST[{rad1, rad2, ang1, ang2}]}]
+           }]
+         ]}
+      ]]
+    },
+   {
+    Dynamic[
+     Plot[
+      F[{charge1, charge3, x}], {x, 0.01, 2},
+      PlotRange -> {{0, 2}, {-3000, 3000}},
+      AxesLabel -> {"Distance (m)", "Force (N)"},
+      ImageSize -> 300, 
+      PlotLabel -> 
+       Style[Subscript[Style["F", Italic], "13"], FontSize -> 15],
+      Epilog -> {PointSize[0.05], Pink,
+        Point[
+         Dynamic[{
+           DIST[{rad1, rad3, ang1, ang3}], 
+           F[{charge1, charge3, DIST[{rad1, rad3, ang1, ang3}]}]
+           }]
+         ]}
+      ]]}}],
+ 
+ TrackedSymbols :> {ang1, ang2, ang3, rad1, rad2, rad3, DIST, F, 
+   netFx, netFy, charge1, charge2, charge3, d12, d13} ,
+ SaveDefinitions -> True,
+ ControlPlacement -> Left
+ ]

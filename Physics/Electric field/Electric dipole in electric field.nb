@@ -1,0 +1,36 @@
+Manipulate[
+ omega = Sqrt[(2*charge*EField)/(mass*length)];
+ xDir = length*Cos[angle*(Pi/180)*Sin[omega*t]];
+ yDir = length*Sin[angle*(Pi/180)*Sin[omega*t]];
+ Show[{
+   VectorPlot[{EField, 0}, {x, -(length), length}, {y, -(length), 
+     length}, 
+    VectorPoints -> {2, If[Round[EField] == 0, 2, Round[EField] + 1]},
+     VectorStyle -> {Red, Arrowheads[{.03, .03}]}],
+   Graphics[{
+     Gray, Arrowheads[.05], Arrow[{{-xDir, -yDir}, {xDir, yDir}}],
+     Red, Disk[{xDir, yDir}, 0.3],
+     Blue, Disk[{-xDir, -yDir}, 0.3]
+     }
+    ]}]
+ ,
+ Grid[{
+   {Style["Electric dipole in electric field", Bold, 24, 
+     FontColor -> RGBColor[0.15, 0.21, 0.49]]},
+   {Style["r1.1909.1", Bold, 14]},
+   {Style["", Bold, 12]},
+   {Control[{{t, 0, "Time"}, 0, Infinity, 0.1, 
+      Appearance -> "Labeled"}]},
+   {Control[{{length, 2, "Distance"}, 0.1, 10, 0.01, 
+      Appearance -> "Labeled"}]},
+   {Control[{{charge, 0.5, "Charge"}, 0, 1, 0.01, 
+      Appearance -> "Labeled"}]},
+   {Control[{{EField, 3, "Electric field strength"}, 0, 10, 0.01, 
+      Appearance -> "Labeled"}]},
+   {Control[{{mass, 1, "Mass of particle"}, 0.1, 10, 0.01, 
+      Appearance -> "Labeled"}]},
+   {Control[{{angle, 10, "Initial angle"}, 0, 30, 0.01, 
+      Appearance -> "Labeled"}]}
+   }, Alignment -> Left
+  ], TrackedSymbols :> {t, length, charge, EField, mass, angle}
+ ]

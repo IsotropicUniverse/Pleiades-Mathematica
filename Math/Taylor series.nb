@@ -1,0 +1,68 @@
+Manipulate[
+ Grid[
+  If[function == "cos(x)", {{
+     Dynamic[
+      Plot[{Sum[((-1)^k*Power[(x - a), 2*k])/(2 k)!, {k, 0, n}], 
+        Cos[(x - a)]}, {x, 0, 20}, 
+       PlotLegends -> {Row[{"Taylor expansion (x =", a, " )"}], 
+         "cos(x)"}, PlotRange -> {{0, 10}, {-2, 2}}, 
+       PlotLabel -> Style[Row[{"Order ", n}], Bold, 15], 
+       ImageSize -> {500, 300}]]
+     }, {Style[
+      Row[{"order ", n, " Taylor expansion at x = 0"}]]}, {Dynamic[
+      Series[Cos[x], {x, 0, n}]]}, {Text[""]}, {Style[
+      Row[{"Maclaurin series"}]]}, {Text[
+      "\!\(\*SubsuperscriptBox[\(\[Sum]\), \(n = 0\), \
+\(\[Infinity]\)]\)\!\(\*FractionBox[\(\*SuperscriptBox[\((\(-1\))\), \
+\(n\)] \*SuperscriptBox[\(x\), \(2  n\)]\), \(\((2  n)\)!\)]\)"]}}, 
+   If[function == "sin(x)", {{
+      
+      Dynamic[
+       Plot[{Sum[((-1)^k*Power[(x - a), (2*k) + 1])/(2 k + 1)!, {k, 0,
+            n}], Sin[(x - a)]}, {x, 0, 20}, 
+        PlotLegends -> {Row[{"Taylor expansion (x =", a, " )"}], 
+          "sin(x)"}, PlotRange -> {{0, 10}, {-2, 2}}, 
+        PlotLabel -> Style[Row[{"Order ", n}], Bold, 15], 
+        ImageSize -> {500, 300}]]
+      }, {Style[
+       Row[{"order ", n, " Taylor expansion at x = 0"}]]}, {Dynamic[
+       Series[Sin[x], {x, 0, n}]]}, {Text[""]}, {Style[
+       Row[{"Maclaurin series"}]]}, {Text[
+       "\!\(\*SubsuperscriptBox[\(\[Sum]\), \(n = 0\), \
+\(\[Infinity]\)]\)\!\(\*FractionBox[\(\*SuperscriptBox[\((\(-1\))\), \
+\(n\)] \*SuperscriptBox[\(x\), \(2  n + 1\)]\), \(\((2  n + \
+1)\)!\)]\)"]}}, If[function == "exp(x)", {{
+       Dynamic[
+        Plot[{Sum[(Power[(x - a), k])/k!, {k, 0, n}], 
+          Exp[x - a]}, {x, -10, 20}, 
+         PlotLegends -> {Row[{"Taylor expansion (x =", a, " )"}], 
+           "exp(x)"}, PlotRange -> {{-10, 10}, {0, 10}}, 
+         PlotLabel -> Style[Row[{"Order ", n}], Bold, 15], 
+         ImageSize -> {500, 300}]]
+       }, {Style[
+        Row[{"order ", n, " Taylor expansion at x = 0"}]]}, {Dynamic[
+        Series[Exp[x], {x, 0, n}]]}, {Text[""]}, {Style[
+        Row[{"Maclaurin series"}]]}, {Text[
+        "\!\(\*SubsuperscriptBox[\(\[Sum]\), \(n = 0\), \(\[Infinity]\
+\)]\)\!\(\*FractionBox[SuperscriptBox[\(x\), \(n\)], \(n!\)]\)"]}}, 
+     "err"]]]
+  , Alignment -> Left],
+ Grid[{
+   (*title*)
+   {Style["Taylor Series", Bold, 24, 
+     FontColor -> RGBColor[0.15, 0.21, 0.49]]},
+   {Style["r1.1909.1", Bold, 14]},
+   {Style["", Bold, 12]}
+   }, Alignment -> Left],
+ Grid[{
+   (*mode selector*)
+   {
+    Control[{{function, "sin(x)"}, {"sin(x)", "cos(x)", "exp(x)"}}]
+    },
+   {Control[{{n, 0, "n"}, 0, 15, 1, Appearance -> "Labeled"}]},
+   {Control[{{a, 0, "a"}, 0, 10, .1, Appearance -> "Labeled"}]}
+   
+   }, Alignment -> Left],
+ TrackedSymbols :> {function, a, n}
+ 
+ ]

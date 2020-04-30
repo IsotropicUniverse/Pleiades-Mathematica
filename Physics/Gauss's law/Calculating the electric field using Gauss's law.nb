@@ -1,0 +1,138 @@
+(*Calculating the electric field using Gauss's law*)
+
+(*functions*)
+Manipulate[
+ If[MODE == "SPHERICAL CHARGE",
+  (*graphics*)
+  (*charge and gauss surface, charge shell*)
+  Show[{
+    If[sphereShell == True,
+     Show[{
+       Graphics3D[{
+         Opacity[1], Green, Sphere[{0, 0, 0}, chargeRadius],
+         Opacity[0.3], Blue, Sphere[{0, 0, 0}, gaussRadius]
+         }, Boxed -> False]
+       }],
+     (*charge and gauss surface, spherical charge*)
+     Show[
+      Graphics3D[{
+        Opacity[0.3], Green, Sphere[{0, 0, 0}, chargeRadius],
+        Opacity[0.3], Blue, Sphere[{0, 0, 0}, gaussRadius]
+        }, Boxed -> False]
+      ]
+     ],
+    (*EF vector, positive charge*)
+    If[charge >= 0,
+     Show[{
+       VectorPlot3D[{x, y, z}, {x, -5.1, 5.1}, {y, -5.1, 
+         5.1}, {z, -5.1, 5.1}, Boxed -> False, 
+        VectorPoints -> Abs[Round[charge] + 1], 
+        VectorStyle -> {Lighter[Red], Arrowheads[{.03, .03}]}]
+       }],
+     (*EF vector, negative charge*)
+     Show[{
+       VectorPlot3D[{-x, -y, -z}, {x, -5.1, 5.1}, {y, -5.1, 
+         5.1}, {z, -5.1, 5.1}, Boxed -> False, 
+        VectorPoints -> Abs[Round[charge]], 
+        VectorStyle -> {Lighter[Blue], Arrowheads[{.03, .03}]}]
+       }]
+     ]},
+   ImageSize -> {400, 400}], If[MODE == "LINEAR CHARGE", Show[{
+     Graphics3D[{
+       (*line charge*)
+       If[linearCharge >= 0,
+        {Lighter[Red], 
+         Tube[{{0, 0, -0.9*length}, {0, 0, 0.9*length}}, 0.1*radius]},
+        {Lighter[Blue], 
+         Tube[{{0, 0, -0.9*length}, {0, 0, 0.9*length}}, 0.1*radius]}],
+       Lighter[Green], Opacity[0.5], 
+       Cylinder[{{0, 0, -0.5*length}, {0, 0, 0.5*length}}, radius],
+       (*EF vector*)
+       If[linearCharge >= 0,
+        {Opacity[0.1*Abs[linearCharge]], Lighter[Red], Thick, 
+         Arrowheads[0.03], Arrow[{{0, 0, 0}, {2*radius, 0, 0}}], 
+         Arrow[{{0, 0, -0.25*length}, {2*radius, 0, -0.25*length}}], 
+         Arrow[{{0, 0, 0.25*length}, {2*radius, 0, 0.25*length}}]},
+        {Opacity[0.1*Abs[linearCharge]], Lighter[Blue], Thick, 
+         Arrowheads[0.03], Arrow[{{2*radius, 0, 0}, {0, 0, 0}}], 
+         Arrow[{{2*radius, 0, -0.25*length}, {0, 0, -0.25*length}}], 
+         Arrow[{{2*radius, 0, 0.25*length}, {0, 0, 0.25*length}}]}
+        ],
+       Opacity[1.0], Thick, Black, 
+       Line[{{radius, 0, -0.5*length}, {0, 0, -0.5*length}}],
+       Style[Text[radius, {0.5*radius, 0, -0.5*length}], Bold, 13],
+       Lighter[Green], Opacity[1.0], Thick, 
+       Line[{{0, radius, -0.5*length}, {0, radius, 0.5*length}}],
+       Style[Text[length, {0, 1.1*radius, 0}], Bold, 13]
+       
+       }]
+     }, Boxed -> False, ImageSize -> {400, 400}], "err"], "err"],
+ 
+ Grid[{
+   (*title*)
+   {Style["Calculating the electric field using Gauss's law", Bold, 24,
+      FontColor -> RGBColor[0.15, 0.21, 0.49]]},
+   {Style["r3.1909.3", Bold, 14]},
+   {Style["", Bold, 12]}
+   }, Alignment -> Left],
+ 
+ Grid[{
+   (*mode selector*)
+   {
+    Control[{{MODE, "SPHERICAL CHARGE"}, {"SPHERICAL CHARGE", 
+       "LINEAR CHARGE"}}]
+    }
+   }, Alignment -> Left],
+ Dynamic[
+  Grid[
+   If[MODE == "SPHERICAL CHARGE", {
+     (*controller*)
+     {
+      Control[{{charge, 1, "Electric charge (Q)"}, -5, 5, 0.1, 
+        Appearance -> "Labeled"}]
+      },
+     {
+      Control[{{chargeRadius, 2, "Radius of charge (R)"}, 0, 5, 0.1, 
+        Appearance -> "Labeled"}]
+      },
+     {
+      Control[{{gaussRadius, 1, "Radius of gaussian surface (r)"}, 0, 
+        5, 0.1, Appearance -> "Labeled"}]
+      },
+     {
+      Control[{{sphereShell, False, "Spherical shell"}, {True, False}}]
+      },
+     (*numeric output*)
+     (*symbolic output*)
+     {
+      Dynamic[
+       Style[Row[{"Formula: ", 
+          If[sphereShell == True && gaussRadius < chargeRadius,
+           "0",
+           If[sphereShell == False && gaussRadius < chargeRadius,
+            (Q/(4*\[Pi]*
+                 Subscript[\[Epsilon], 0]))*(r/(R^3)), (1/(4*\[Pi]*
+                 Subscript[\[Epsilon], 0]))*(Q/(r^2))],
+           
+           gaussEF[charge, gaussRadius]]}
+         ], Bold, 18
+        ]
+       ]
+      }
+     }, {
+     {Control[{{linearCharge, 2, "Charge (Q)"}, -10, 10, 0.01, 
+        Appearance -> "Labeled"}]},
+     {Control[{{radius, 1, "Cylindrical radius (R)"}, 0, 5, 0.01, 
+        Appearance -> "Labeled"}]},
+     {Control[{{length, 2, "Length (L)"}, 0, 10, 0.01, 
+        Appearance -> "Labeled"}]},
+     {Style[
+       Row[{"Formula: ", (Q/(2*Pi*R*L*Subscript[\[Epsilon], 0])), 
+         " or " , (\[Lambda]/(2*Pi*R*Subscript[\[Epsilon], 0])), 
+         " ( \[Lambda]=Q/L )"}], Bold, 18]}
+     }], Alignment -> Left]],
+ 
+ 
+ TrackedSymbols :> {charge, sphereShell, chargeRadius, gaussRadius, 
+   MODE, length, radius, linearCharge}
+ ]

@@ -1,0 +1,117 @@
+(*plenetDistance*)
+Mercury := 0.38709893
+Venus := 0.72333199
+Mars := 1.52366231
+Jupiter := 5.20336301
+Saturn := 9.53707032
+Uranus := 19.19126393
+Neptune := 30.06896348
+(*functions*)
+linearVelocity[{radius_, SMA_}] := 
+ Sqrt[6.674*
+   Power[10, -11]*1.988435*10^30*((2/(radius*1.496*
+         Power[10, 8])) - (1/SMA))]
+radialVelocity[SMA_] := 
+ Sqrt[(6.674*10^-11*1.988435*10^30)/(SMA*1.496*10^11)]/(SMA*1.496*10^\
+11)
+siderealPeriod[SMA_] := 
+ Sqrt[(4*Pi^2*((SMA*1.496*10^11)^3))/(1.988435*10^30*6.674*
+      Power[10, -11])]/86400
+synodicPeridod[{SMA1_, SMA2_}] := (1/
+   Abs[(1/siderealPeriod[SMA1]) - (1/siderealPeriod[SMA2])])
+(*graphics*)
+Manipulate[
+ Grid[{
+   {
+    Graphics[{
+      Gray, Circle[{0, 0}, radius1],
+      Gray, Circle[{0, 0}, 1],
+      Gray, Circle[{0, 0}, radius3],
+      LightGray, 
+      Line[{{0, 0}, {radius1*Cos[86400*radialVelocity[radius1]*t], 
+         radius1*Sin[86400*radialVelocity[radius1]*t]}}],
+      LightBlue, 
+      Line[{{0, 0}, {1*Cos[86400*radialVelocity[1]*t], 
+         1*Sin[86400*radialVelocity[1]*t]}}],
+      LightBrown, 
+      Line[{{0, 0}, {radius3*Cos[86400*radialVelocity[radius3]*t], 
+         radius3*Sin[86400*radialVelocity[radius3]*t]}}],
+      Darker[Yellow, 0.05], Disk[{0, 0}, 0.2],
+      
+      Gray, 
+      Disk[{radius1*Cos[86400*radialVelocity[radius1]*t], 
+        radius1*Sin[86400*radialVelocity[radius1]*t]}, 0.05*radius3],
+      
+      Blue, 
+      Disk[{1*Cos[86400*radialVelocity[1]*t], 
+        1*Sin[86400*radialVelocity[1]*t]}, 0.05*radius3],
+      
+      Brown, 
+      Disk[{radius3*Cos[86400*radialVelocity[radius3]*t], 
+        radius3*Sin[86400*radialVelocity[radius3]*t]}, 0.05*radius3]
+      
+      }, ImageSize -> 300, 
+     PlotRange -> {{-(radius3 + 0.5), 
+        radius3 + 0.5}, {-(radius3 + 0.5), radius3 + 0.5}}]
+    },
+   {
+    Style[Row[{"Day ", NumberForm[t, {5, 2}]}], 70]
+    },
+   {
+    Style[
+     Row[{"inferior planet orbital period = ", 
+       NumberForm[siderealPeriod[radius1], {5, 2}], " days"}], 20]
+    },
+   {
+    Style[
+     Row[{"Earth orbital period = ", 
+       NumberForm[siderealPeriod[1], {5, 2}], " days"}], 20]
+    },
+   {
+    Style[
+     Row[{"superior planet orbital period = ", 
+       NumberForm[siderealPeriod[radius3], {5, 2}], " days"}], 20]
+    },
+   {
+    Style[
+     Row[{"Earth - inferior planet synodic period = ", 
+       NumberForm[synodicPeridod[{radius1, 1}]], " days"}], 20]
+    },
+   {
+    Style[
+     Row[{"Earth - superior planet synodic period = ", 
+       NumberForm[synodicPeridod[{radius3, 1}]], " days"}], 20]
+    }
+   
+   }, Alignment -> Left],
+ (*plots*)
+ (*controls*)
+ Grid[{
+   {
+    Style[Row[{"Sidereal period and synodic period"}], Bold, 25]
+    },
+   {
+    
+    Control[{{radius1, 0.37, "inferior planet orbital radius (AU)"}, 
+      0.1, 1, 0.1, Appearance -> "Labeled"}],
+    Control[{{radius1, Venus, ""}, {Mercury, Venus}}]
+    },
+   {
+    
+    Control[{{radius3, 1.5, "superior planet orbital radius (AU)"}, 1,
+       31, 0.1, Appearance -> "Labeled"}],
+    Control[{{radius3, Mars, ""}, {Mars, Jupiter, Saturn, Uranus, 
+       Neptune}}]
+    },
+   {
+    
+    Control[{{t, 0, "time (days)"}, 0, Infinity, 1, 
+      Appearance -> "Labeled"}]
+    }
+   
+   }, Alignment -> Left],
+ TrackedSymbols :> {siderealPeriod, radius1, radialVelocity, radius3, 
+   t}
+ ]
+
+(*control*)
